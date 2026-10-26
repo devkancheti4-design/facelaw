@@ -1,0 +1,182 @@
+[
+ {
+  "name": "L1_photon",
+  "law": "L1",
+  "domain": [
+   0,
+   1023
+  ],
+  "intent": "x - b: the photon estimate in DN units (N^ = this / g)",
+  "expr": "(x - 64)",
+  "minimal": false,
+  "ops": 1,
+  "ladder": 1,
+  "secs": 0.002,
+  "evals": 1
+ },
+ {
+  "name": "L1_sat",
+  "law": "L1",
+  "domain": [
+   0,
+   1023
+  ],
+  "intent": "1 iff the pixel is clipped at white: no number",
+  "expr": "((x + 1) >> 10)",
+  "minimal": true,
+  "ops": 2,
+  "ladder": 2,
+  "secs": 0.001,
+  "evals": 12
+ },
+ {
+  "name": "L2_census",
+  "law": "L2",
+  "domain": [
+   0,
+   65535
+  ],
+  "intent": "s = a | b<<8 (two 8-bit codes) -> [a > b]",
+  "expr": "(((255 - x) >> 8) - (((x >> 8) - x) >> 8))",
+  "minimal": false,
+  "ops": 6,
+  "ladder": 3,
+  "secs": 0.057,
+  "evals": 1043
+ },
+ {
+  "name": "L4_rigid",
+  "law": "L4",
+  "domain": [
+   0,
+   31
+  ],
+  "intent": "canonical row r -> 1 iff every point of it is outside the expression support",
+  "expr": "((x - x) - ((x - 18) >> 31))",
+  "minimal": false,
+  "ops": 4,
+  "ladder": 2,
+  "secs": 0.001,
+  "evals": 87
+ },
+ {
+  "name": "L5_accept",
+  "law": "L5",
+  "domain": [
+   -1024,
+   1023
+  ],
+  "intent": "z16 -> 1 iff z <= tau",
+  "expr": "((x - x) - ((x - 38) >> 31))",
+  "minimal": false,
+  "ops": 4,
+  "ladder": 2,
+  "secs": 0.006,
+  "evals": 93
+ },
+ {
+  "name": "L6_dark",
+  "law": "L6",
+  "domain": [
+   0,
+   4095
+  ],
+  "intent": "lambda16 -> 1 iff no method can reach error 1%: answer 'too dark to tell'",
+  "expr": "((x - x) - ((x - 207) >> 31))",
+  "minimal": false,
+  "ops": 4,
+  "ladder": 2,
+  "secs": 0.015,
+  "evals": 87
+ },
+ {
+  "name": "L5_open",
+  "law": "L5",
+  "domain": [
+   0,
+   4095
+  ],
+  "intent": "u = 256 lambda / lambda_open -> 1 iff this method cannot reach FAR <= eps: 'too dark to tell'",
+  "expr": "((x - x) - ((x - 256) >> 31))",
+  "minimal": false,
+  "ops": 4,
+  "ladder": 2,
+  "secs": 0.015,
+  "evals": 87
+ },
+ {
+  "name": "OUT_any3",
+  "law": "OUT",
+  "domain": [
+   0,
+   31
+  ],
+  "intent": "1 iff sat | out | dark",
+  "expr": "(1 & ((-(x & 7)) >> 31))",
+  "minimal": true,
+  "ops": 4,
+  "ladder": 4,
+  "secs": 0.001,
+  "evals": 180
+ },
+ {
+  "name": "OUT_both",
+  "law": "OUT",
+  "domain": [
+   0,
+   31
+  ],
+  "intent": "1 iff the runner-up is accepted as well as the best (a1 & a2): not separable",
+  "expr": "((x & (x >> 1)) >> 3)",
+  "minimal": true,
+  "ops": 3,
+  "ladder": 3,
+  "secs": 0.001,
+  "evals": 62
+ },
+ {
+  "name": "L5_conf",
+  "law": "L5",
+  "domain": [
+   -2048,
+   2047
+  ],
+  "intent": "lo16 -> 1 iff the posterior of the winner is >= 1 - eps (Chow's optimal reject rule)",
+  "expr": "(((x - 74) >> 31) - (x - (x + 1)))",
+  "minimal": false,
+  "ops": 5,
+  "ladder": 2,
+  "secs": 0.009,
+  "evals": 116
+ },
+ {
+  "name": "OUT_abst_x",
+  "law": "OUT",
+  "domain": [
+   0,
+   15
+  ],
+  "intent": "s -> (s & 7) ^ 4: zero exactly when the law may answer",
+  "expr": "(4 ^ (x & 7))",
+  "minimal": false,
+  "ops": 2,
+  "ladder": 1,
+  "secs": 0.0,
+  "evals": 3
+ },
+ {
+  "name": "OUT_abst",
+  "law": "OUT",
+  "domain": [
+   0,
+   15
+  ],
+  "intent": "1 iff the law must not answer: clipped, Lambertian law broken, or not confident",
+  "expr": "(1 & ((-(4 ^ ((x) & 7))) >> 31))",
+  "minimal": true,
+  "ops": 5,
+  "ladder": 4,
+  "secs": 0.002,
+  "evals": 217
+ }
+]
